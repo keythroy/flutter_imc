@@ -30,12 +30,16 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController pesoController = TextEditingController();
   TextEditingController alturaController = TextEditingController();
 
+  GlobalKey<FormState> _fomrKey = GlobalKey<FormState>();
+
   String _infoText = "Informe seus dados!";
 
   void _resetFields(){
     pesoController.text = "";
     alturaController.text = "";
-    _infoText = "Informe seus dados!";
+    setState(() {
+      _infoText = "Informe seus dados!";
+    });
   }
 
   void _calculate(){
@@ -77,11 +81,13 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
-        child: Column(
+        child: Form(
+          key: _fomrKey,
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Icon(Icons.person_outline, size: 120, color: Colors.green),
-            TextField(
+            TextFormField(
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: "Peso (Kg)",
@@ -90,8 +96,13 @@ class _MyHomePageState extends State<MyHomePage> {
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.green, fontSize: 25.0),
               controller: pesoController,
+              validator: (val) {
+                if(val.isEmpty){
+                  return "Insira seu peso!";
+                }
+              },
             ),
-            TextField(
+            TextFormField(
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: "Altura (cm)",
@@ -100,11 +111,20 @@ class _MyHomePageState extends State<MyHomePage> {
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.green, fontSize: 25.0),
               controller: alturaController,
+              validator: (val){
+                if(val.isEmpty){
+                  return "Insira sua altura!";
+                }
+              },
             ),
             Container(
               height: 50.0,
               child: RaisedButton(
-                onPressed: _calculate,
+                onPressed: (){
+                  if(_fomrKey.currentState.validate()){
+                    _calculate();
+                  }
+                },
                 child: Text(
                   "Calcular", 
                   style: TextStyle(color: Colors.white, fontSize: 25.0),
@@ -118,6 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
               style: TextStyle(color: Colors.green, fontSize: 25.0),
             ),
           ],
+        ),
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
